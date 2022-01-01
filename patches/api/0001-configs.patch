@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Parker Wahle <parkeredwardwahle2017@gmail.com>
+Date: Sat, 1 Jan 2022 12:29:38 -0500
+Subject: [PATCH] configs
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index e48af3822e9f118399c3a1c9358c56efae12e0da..08e21c04c957568de84ce284e1017e23688e9be0 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1778,6 +1778,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Paper end
+ 
++        // PutridPaper start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getPutridPaperConfig()
++        {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // PutridPaper end
++
+         /**
+          * Sends the component to the player
+          *

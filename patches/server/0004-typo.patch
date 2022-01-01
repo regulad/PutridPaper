@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Parker Wahle <parkeredwardwahle2017@gmail.com>
+Date: Sat, 1 Jan 2022 12:32:24 -0500
+Subject: [PATCH] typo
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 63140483d85c3e4d027a20f83494e87ecc8d110b..571fb96ccea49401c3a849122bdbfb861b95dcc9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/xyz.regulad/PutridPaper-api/pom.properties")
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/xyz.regulad/PutridPaper-api/pom.properties");
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
