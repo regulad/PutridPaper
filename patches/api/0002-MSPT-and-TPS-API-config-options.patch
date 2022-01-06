@@ -1,0 +1,189 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Parker Wahle <parkeredwardwahle2017@gmail.com>
+Date: Thu, 6 Jan 2022 18:15:32 -0500
+Subject: [PATCH] MSPT and TPS API & config options
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 53c4e5ca208ee17c7c244e416c537c7b63edf194..da4d2ca861cfe8006d618dc958408f691c0f48fa 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -2181,4 +2181,38 @@ public final class Bukkit {
+     public static Server.Spigot spigot() {
+         return server.spigot();
+     }
++
++    // PutridPaper Start
++
++    /**
++     * Returns the target TPS that the server is trying to achieve.
++     * @return The target TPS, in {@code int} form.
++     */
++    public static int getTargetTPS() {
++        return server.getTargetTPS();
++    }
++
++    /**
++     * Sets the target TPS. See {@link Server#setTargetMSPT(int)}
++     */
++    public static boolean setTargetTPS(final int targetTPS) {
++        return server.setTargetTPS(targetTPS);
++    }
++
++    /**
++     * Returns the target MSPT that the server is trying to achieve.
++     * @return The target MSPT, in {@code int} form.
++     */
++    public static int getTargetMSPT() {
++        return server.getTargetMSPT();
++    }
++
++    /**
++     * Sets the target MSPT. See {@link Server#setTargetTPS(int)}
++     */
++    public static boolean setTargetMSPT(final int targetMSPT) {
++        return server.setTargetMSPT(targetMSPT);
++    }
++
++    // PutridPaper End
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 08e21c04c957568de84ce284e1017e23688e9be0..8fec7eb809fd9bf3bc45274d21bfdd8b3156e4d4 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -915,6 +915,31 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+      * Shutdowns the server, stopping everything.
+      */
+     public void shutdown();
++    // PutridPaper Start
++
++    /**
++     * Returns the target TPS that the server is trying to achieve.
++     * @return The target TPS, in {@code int} form.
++     */
++    public int getTargetTPS();
++
++    /**
++     * Sets the target TPS. See {@link Server#setTargetMSPT(int)}
++     */
++    public boolean setTargetTPS(final int targetTPS);
++
++    /**
++     * Returns the target MSPT that the server is trying to achieve.
++     * @return The target MSPT, in {@code int} form.
++     */
++    public int getTargetMSPT();
++
++    /**
++     * Sets the target MSPT. See {@link Server#setTargetTPS(int)}
++     */
++    public boolean setTargetMSPT(final int targetMSPT);
++
++    // PutridPaper End
+ 
+     /**
+      * Broadcasts the specified message to every user with the given
+diff --git a/src/main/java/xyz/regulad/putridpaper/event/MSPTChangeEvent.java b/src/main/java/xyz/regulad/putridpaper/event/MSPTChangeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8437b344186e0d2df81353381cc23646d3c4f57f
+--- /dev/null
++++ b/src/main/java/xyz/regulad/putridpaper/event/MSPTChangeEvent.java
+@@ -0,0 +1,46 @@
++package xyz.regulad.putridpaper.event;
++
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++import org.jetbrains.annotations.NotNull;
++
++public class MSPTChangeEvent extends Event implements Cancellable {
++    private static final HandlerList handlers = new HandlerList();
++    private boolean cancelled = false;
++
++    private final int beforeMSPT;
++    private final int afterMSPT;
++
++    public MSPTChangeEvent(final int beforeMSPT, final int afterMSPT) {
++        this.beforeMSPT = beforeMSPT;
++        this.afterMSPT = afterMSPT;
++    }
++
++    public int getAfterMSPT() {
++        return afterMSPT;
++    }
++
++    public int getBeforeMSPT() {
++        return beforeMSPT;
++    }
++
++    public static @NotNull HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    @Override
++    public @NotNull HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @Override
++    public boolean isCancelled() {
++        return cancelled;
++    }
++
++    @Override
++    public void setCancelled(boolean cancel) {
++        cancelled = cancel;
++    }
++}
+diff --git a/src/main/java/xyz/regulad/putridpaper/event/TPSChangeEvent.java b/src/main/java/xyz/regulad/putridpaper/event/TPSChangeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f26a847b07c952b90a57a7eb09f1fc587d0b3efc
+--- /dev/null
++++ b/src/main/java/xyz/regulad/putridpaper/event/TPSChangeEvent.java
+@@ -0,0 +1,46 @@
++package xyz.regulad.putridpaper.event;
++
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++import org.jetbrains.annotations.NotNull;
++
++public class TPSChangeEvent extends Event implements Cancellable {
++    private static final HandlerList handlers = new HandlerList();
++    private boolean cancelled = false;
++
++    private final int beforeTPS;
++    private final int afterTPS;
++
++    public TPSChangeEvent(final int beforeTPS, final int afterTPS) {
++        this.beforeTPS = beforeTPS;
++        this.afterTPS = afterTPS;
++    }
++
++    public int getAfterTPS() {
++        return afterTPS;
++    }
++
++    public int getBeforeTPS() {
++        return beforeTPS;
++    }
++
++    public static @NotNull HandlerList getHandlerList() {
++        return handlers;
++    }
++
++    @Override
++    public @NotNull HandlerList getHandlers() {
++        return handlers;
++    }
++
++    @Override
++    public boolean isCancelled() {
++        return cancelled;
++    }
++
++    @Override
++    public void setCancelled(boolean cancel) {
++        cancelled = cancel;
++    }
++}
